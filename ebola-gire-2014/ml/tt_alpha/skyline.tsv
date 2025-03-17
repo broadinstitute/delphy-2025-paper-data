@@ -1,0 +1,4 @@
+#Skyline assuming 50.0 gen/year and approximate confidence bounds (+/- 2.000000 standard deviations of the LH)
+#date 	N_e 	lower 	upper
+2014.175	6.035e+00	2.724e+00	1.337e+01
+2014.462	1.193e+01	9.281e+00	1.534e+01

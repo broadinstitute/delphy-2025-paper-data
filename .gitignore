@@ -1,0 +1,39 @@
+/delphy
+/beast1
+/beast2
+/loganalyser2
+/mafft
+/treeannotator2
+/delphy-env
+/sapling
+/delphy_mcc
+/iqtree2
+
+# Avoid storing large amounts of easily downloadable raw data from elsewhere
+/mpox-otoole-2024/raw/     # Just a clone of the git repo https://github.com/hmpxv/apobec3.git
+/mpox-parker-2025/raw/     # Just a clone of the git repo https://github.com/andersen-lab/Mpox_West_Africa.git
+/h5n1-andersen-2025/raw/   # Just a clone of the git repo https://github.com/andersen-lab/avian-influenza/ and a direct download from GenBank via Entrez
+
+# Avoid accidentally publishing sequence data from GISAID, in violation of their [GISAID's Data Access Agreement](https://gisaid.org/terms-of-use/).  See /sars-cov-2-gisaid-week-by-week/README.md
+/sars-cov-2-gisaid-week-by-week/20200331.fasta.xz
+/sars-cov-2-gisaid-week-by-week/metadata_20200331.tsv
+/sars-cov-2-gisaid-week-by-week/inputs_by_collection_date
+/sars-cov-2-gisaid-week-by-week/inputs_by_submission_date
+# Output *.trees files contain explicit mutation annotations that could be used to reconstruct the original GISAID sequences
+/sars-cov-2-gisaid-week-by-week/outputs_by_collection_date_a
+/sars-cov-2-gisaid-week-by-week/outputs_by_collection_date_b
+/sars-cov-2-gisaid-week-by-week/outputs_by_submission_date_a
+/sars-cov-2-gisaid-week-by-week/outputs_by_submission_date_b
+
+# *.dphy files are too large to store in a Git repo on GitHub; available upon request to pvarilly@broadinstitute.org
+*.dphy
+
+# Same for the .trees file of the N=100,000 scaling runs
+/sims/exp_100000/delphy_outputs_*/*.trees
+/sims/const_100000/delphy_outputs_*/*.trees
+
+# The original *.trees files in h5n1-andersen-2025 are also too big for GitHub, but not when compressed
+/h5n1-andersen-2025/delphy_outputs_*/h5n1-andersen-ebfdf65-ALL_full_dates_only.trees
+
+# Likewise for the mpox-parker-2025 BEAST run
+/mpox-parker-2025/beast_run/Mpox_2poch_combined.trees
