@@ -123,9 +123,9 @@ for accessionId, info in metadata.items():
 badAccessionIDs = [
         # References:
         # [1] https://virological.org/t/temporal-signal-and-the-evolutionary-rate-of-2019-n-cov-using-47-genomes-collected-by-feb-01-2020/379 from 3 Feb 2020
-        # [2] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7142683/
-        # [3] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7228400/
-        # [4] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8769011/
+        # [2] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7142683/ (Bal et al 2020)
+        # [3] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7228400/ (Wang et al 2020)
+        # [4] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8769011/ (Lv et al 2021)
         # [5] https://raw.githubusercontent.com/roblanf/sarscov2phylo/master/excluded_sequences.tsv
         # [6] https://raw.githubusercontent.com/nextstrain/ncov/master/defaults/exclude.txt
         # ** = Marked as "Under Investigation" in GISAID
@@ -255,7 +255,7 @@ badAccessionIDs = [
         'EPI_ISL_10980370', # NONE - ** - hCoV-19/Zambia/MH21_105_5506/2020
         'EPI_ISL_417446',   # [6] - ** - hCoV-19/Italy/LOM-UniMI02/2020 - Italy/UniMI02/2020 in NS-2020-06-08
         
-        # Collected by epi week 10  TO FINISH!
+        # Collected by epi week 10
         'EPI_ISL_2758215',  # [6] - ** - hCoV-19/India/un-IRSHA-CD210871/2020 - India/un-IRSHA-CD210871/2020 in NS-2021-06-05
         'EPI_ISL_2758214',  # [6] - ** - hCoV-19/India/un-IRSHA-CD210927/2020 - India/un-IRSHA-CD210927/2020 in NS-2021-06-05
         'EPI_ISL_2758213',  # [6] - ** - hCoV-19/India/un-IRSHA-CD210929/2020 - India/un-IRSHA-CD210929/2020 in NS-2021-06-05
