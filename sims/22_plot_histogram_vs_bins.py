@@ -51,7 +51,7 @@ def plot_logs(delphy_log_filename_and_colors_and_labels, out_pdf_filename, groun
     make_subplot( 2, 'TreeHeight', r'Tree Height (years)',
                   (datetime.date(2024, 7, 31) - datetime.date.fromisoformat(root_date)).days / 365.0)
     this_ax = make_subplot( 3, 'kappa', r'HKY $\kappa$ parameter', 5.0)
-    fig.legend(this_ax.get_legend_handles_labels()[0], ['BEAST2', 'Delphy'], loc='lower right')
+    #fig.legend(this_ax.get_legend_handles_labels()[0], ['BEAST2', 'Delphy'], loc='lower right')
     fig.delaxes(ax[0][3])
     
     make_subplot( 5, 'freqParameter.1', r'HKY $\pi_A$', 0.30)
@@ -59,15 +59,17 @@ def plot_logs(delphy_log_filename_and_colors_and_labels, out_pdf_filename, groun
     make_subplot( 7, 'freqParameter.3', r'HKY $\pi_G$', 0.20)
     make_subplot( 8, 'freqParameter.4', r'HKY $\pi_T$', 0.32)
 
-    make_subplot( 9, 'CoalescentExponential', r'Coalescent Prior')
+    this_ax = make_subplot( 9, 'CoalescentExponential', r'Coalescent Prior')
+    this_ax.set_xticks([-170000, -140000, -110000])
     make_subplot(10, 'ePopSize', r'Final Pop Size (years)',
                  6.0 if delphy_log_filename.startswith('exp') else 2.0)
     make_subplot(11, 'growthRate', r'Pop Growth Rate (1/year)',
                  10.0 if delphy_log_filename.startswith('exp') else 0.0)
     fig.delaxes(ax[2][3])
 
-    fig.legend([label for (_,_,label) in delphy_log_filename_and_colors_and_labels], loc='lower right', 
-           bbox_to_anchor=(0.95, 0.05))
+    fig.legend([label for (_,_,label) in delphy_log_filename_and_colors_and_labels] + ['Ground Truth'],
+               loc='lower right', 
+               bbox_to_anchor=(0.95, 0.05))
     
     plt.savefig(out_pdf_filename)
     print(f'Plot saved to {out_pdf_filename}')
