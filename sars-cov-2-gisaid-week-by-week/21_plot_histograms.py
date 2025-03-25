@@ -8,6 +8,23 @@ import math
 from pathlib import Path
 import baltic as bt
 
+# Conversions for the humans
+# ==========================
+epiweek_2_hyphenated = {
+    '202001': '2020-01',
+    '202002': '2020-02',
+    '202003': '2020-03',
+    '202004': '2020-04',
+    '202005': '2020-05',
+    '202006': '2020-06',
+    '202007': '2020-07',
+    '202008': '2020-08',
+    '202009': '2020-09',
+    '202010': '2020-10',
+    '202011': '2020-11',
+    '202012': '2020-12',
+    '202013': '2020-13',
+}
 def extract_log_params(log_filename, burnin):
     # Extremely brittle way of extracting distributions from the log files
     raw_data = pd.read_table(log_filename, comment='#')
@@ -53,7 +70,7 @@ def do_plots(epiweek_2_log_file, epiweek_2_tree_file, out_pdf_filename):
     ax.violinplot([[mu*1e3 for mu in log['clockRate']] for log in epiweek_2_logs.values()], **kwargs)
     ax.set_ylim([0.0, 2.5])
     ax.set_xticks(np.arange(1, len(epiweek_2_logs)+1))
-    ax.set_xticklabels(list(epiweek_2_logs.keys()))
+    ax.set_xticklabels(list(epiweek_2_hyphenated[w] for w in epiweek_2_logs.keys()))
     ax.set_ylabel('Clock rate (x10${}^{-3}$/site/year)')
     
     ax = plt.subplot(3,1,2)
@@ -62,7 +79,7 @@ def do_plots(epiweek_2_log_file, epiweek_2_tree_file, out_pdf_filename):
     ax.violinplot([[12*np.log(2)/g for g in log['growthRate']] for log in epiweek_2_logs.values()], **kwargs)
     ax.set_ylim([0.0, 2.0])
     ax.set_xticks(np.arange(1, len(epiweek_2_logs)+1))
-    ax.set_xticklabels(list(epiweek_2_logs.keys()))
+    ax.set_xticklabels(list(epiweek_2_hyphenated[w] for w in epiweek_2_logs.keys()))
     ax.set_ylabel('Doubling time (months)')
     
     ax = plt.subplot(3,1,3)
@@ -83,7 +100,7 @@ def do_plots(epiweek_2_log_file, epiweek_2_tree_file, out_pdf_filename):
         ax.axhline(bt.decimalDate(datestr), color='#DDDDDD', zorder=-1, lw=0.5)
     
     ax.set_xticks(np.arange(1, len(epiweek_2_logs)+1))
-    ax.set_xticklabels(list(epiweek_2_logs.keys()))
+    ax.set_xticklabels(list(epiweek_2_hyphenated[w] for w in epiweek_2_logs.keys()))
     ax.set_ylabel('tMRCA (2019)')
     ax.set_xlabel('CDC Epiweek')
     

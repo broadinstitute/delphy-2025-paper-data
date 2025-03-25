@@ -7,6 +7,39 @@ from matplotlib.lines import Line2D
 from pathlib import Path
 import subprocess
 
+# Conversions for the humans
+# ==========================
+epiweek_2_hyphenated = {
+    '202001': '2020-01',
+    '202002': '2020-02',
+    '202003': '2020-03',
+    '202004': '2020-04',
+    '202005': '2020-05',
+    '202006': '2020-06',
+    '202007': '2020-07',
+    '202008': '2020-08',
+    '202009': '2020-09',
+    '202010': '2020-10',
+    '202011': '2020-11',
+    '202012': '2020-12',
+    '202013': '2020-13',
+}
+epiweek_2_end_date = {  # See https://www.cmmcp.org/sites/g/files/vyhlif2966/f/uploads/epiweekcalendar2020.pdf
+    '202001': '4 Jan 2020',
+    '202002': '11 Jan 2020',
+    '202003': '18 Jan 2020',
+    '202004': '25 Jan 2020',
+    '202005': '1 Feb 2020',
+    '202006': '8 Feb 2020',
+    '202007': '15 Feb 2020',
+    '202008': '22 Feb 2020',
+    '202009': '29 Feb 2020',
+    '202010': '7 Mar 2020',
+    '202011': '14 Mar 2020',
+    '202012': '21 Mar 2020',
+    '202013': '28 Mar 2020',
+}
+
 # Read in metadata
 # ===========================
 print("\nReading in metadata...")
@@ -260,7 +293,7 @@ def compound_plot(epiweek_2_tree_file, out_pdf_filename):
         index_2_simple_geo0 = simple_parsimony(mcc_tree, lambda node: simple_geo0_of(node.name))
 
         ax = plt.subplot(3,4,i+1)
-        plt.title(f'Epiweek {epiweek} (N={len(leaves)})')
+        plt.title(f'Epiweek {epiweek_2_hyphenated[epiweek]} (N={len(leaves)})\n(ending on {epiweek_2_end_date[epiweek]})')
         plt.xlabel(None)
         
         x_attr=lambda k: k.absoluteTime
@@ -438,7 +471,7 @@ Path('plots').mkdir(parents=True, exist_ok=True)
 
 
 # Compound plot for paper
-for run in ('a', 'b'):
+for run in ('a','b'):
     epiweek_2_tree_file = {
         epiweek: f'./outputs_by_submission_date_{run}/to_epi_week_{epiweek}/to_epi_week_{epiweek}.mcc'
         for epiweek in [
