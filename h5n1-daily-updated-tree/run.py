@@ -659,20 +659,13 @@ for seg in ordered_segments:
 # Make final concatenated alignments
 # ==================================
 
-# A few SRRs are eliminated by inspection from a short trial run
-# TODO: Say something why?
-bogus_ids = set([
-    'SRR32254303',
-    'SRR32254304',
-    'SRR32254301',
-    'SRR32254302',
-    'SRR32512684',
-    'SRR32512683',
-    'SRR32512685',
-    'SRR32415931',
-    'SRR32415933',
-    'SRR32415932',
-    'SRR32512686',
+# Exclude clear outliers from previous runs (visual inspection)
+excluded_ids = set([
+    'A/cattle/NV/25-003385-001-original/2025', # SRR32654098
+    'A/cattle/NV/25-002645-006-original/2025', # SRR32254301
+    'A/cattle/NV/25-002645-005-original/2025', # SRR32254302
+    'A/cattle/NV/25-002645-004-original/2025', # SRR32254303
+    'A/cattle/NV/25-002645-003-original/2025', # SRR32254304
 ])
 
 aligned_all_fasta_path = delphy_inputs_path / f'{run_prefix}-ALL.fasta'
@@ -699,7 +692,7 @@ else:
             #    if dateStr == releaseDate[:4]:
             #        first_id_line = f"{first_id_line[:first_id_line.rindex('|')]}|{dateStr}-01-01/{releaseDate[:10]}"
 
-            if first_id_line.split('|')[0] in bogus_ids:
+            if first_id_line.split('|')[0] in excluded_ids:
                 print(f'Removing gross outlier {first_id_line.strip()} after visual inspection')
             else:
                 f.write(f'>{first_id_line.strip()}\n')
@@ -719,7 +712,7 @@ else:
 
             dateStr = first_id_line.strip().split('|')[-1]
             if len(dateStr) == len('2024-01-01'):
-                if first_id_line.split('|')[0] in bogus_ids:
+                if first_id_line.split('|')[0] in excluded_ids:
                     print(f'Removing gross outlier {first_id_line.strip()} after visual inspection')
                 else:
                     f.write(f'>{first_id_line.strip()}\n')

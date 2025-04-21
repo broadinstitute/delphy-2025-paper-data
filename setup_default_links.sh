@@ -9,3 +9,6 @@
 [ -f iqtree2 ] || ln -s "${HOME}/tools/iqtree-2.3.6-Linux-intel/bin/iqtree2"
 [ -f beast1 ] || ln -s "${HOME}/tools/BEASTv10.5.0/bin/beast" beast1
 [ -f beast2 ] || ln -s "${HOME}/github/CompEvol/beast2.6.2/bin/beast" beast2
+
+[ -f h5n1-daily-updated-tree/mafft ] || ln -s "`pwd`/mafft" h5n1-daily-updated-tree/mafft
+[ -f h5n1-daily-updated-tree/delphy ] || ln -s "`pwd`/delphy" h5n1-daily-updated-tree/delphy

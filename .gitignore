@@ -13,6 +13,7 @@
 /mpox-otoole-2024/raw/     # Just a clone of the git repo https://github.com/hmpxv/apobec3.git
 /mpox-parker-2025/raw/     # Just a clone of the git repo https://github.com/andersen-lab/Mpox_West_Africa.git
 /h5n1-andersen-2025/raw/   # Just a clone of the git repo https://github.com/andersen-lab/avian-influenza/ and a direct download from GenBank via Entrez
+/h5n1-daily-updated-tree/avian-influenza/   # Just a clone of the git repo https://github.com/andersen-lab/avian-influenza/
 
 # Avoid accidentally publishing sequence data from GISAID, in violation of their [GISAID's Data Access Agreement](https://gisaid.org/terms-of-use/).  See /sars-cov-2-gisaid-week-by-week/README.md
 /sars-cov-2-gisaid-week-by-week/20200331.fasta.xz
@@ -34,6 +35,9 @@
 
 # The original *.trees files in h5n1-andersen-2025 are also too big for GitHub, but not when compressed
 /h5n1-andersen-2025/delphy_outputs_*/h5n1-andersen-ebfdf65-ALL_full_dates_only.trees
+
+# The daily-updated H5N1 results change all the time; the latest run is available at https://delphy.fathom.info/us-h5n1-latest
+/h5n1-daily-updated-tree/results
 
 # Likewise for the mpox-parker-2025 BEAST run
 /mpox-parker-2025/beast_run/Mpox_2poch_combined.trees
