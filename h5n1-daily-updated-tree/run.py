@@ -661,11 +661,28 @@ for seg in ordered_segments:
 
 # Exclude clear outliers from previous runs (visual inspection)
 excluded_ids = set([
+    # Excluded on 2025-04-21 from looking at 2025-04-15 run
+    # (https://delphy.fathom.info/?h5n1/2025-04-15-38289d50b/us-h5n1-2025-04-15-38289d50b.dphy
+    #  the latest copy here reflects these exclusions, but the outliers are visible
+    #  in earlier runs already, e.g.,
+    #  https://delphy.fathom.info/?h5n1/2025-04-11-b069c656b/us-h5n1-2025-04-11-b069c656b.dphy)
     'A/cattle/NV/25-003385-001-original/2025', # SRR32654098
     'A/cattle/NV/25-002645-006-original/2025', # SRR32254301
     'A/cattle/NV/25-002645-005-original/2025', # SRR32254302
     'A/cattle/NV/25-002645-004-original/2025', # SRR32254303
     'A/cattle/NV/25-002645-003-original/2025', # SRR32254304
+
+    # Excluded on 2025-05-15 from looking at 2025-05-15 run
+    # (https://delphy.fathom.info/?h5n1/2025-05-15-dcdfaf86d2/us-h5n1-2025-05-15-dcdfaf86d2.dphy)
+    'A/cattle/NV/25-006535-001-original/2025', # SRR33124777
+    'A/cattle/NV/25-006537-001-original-repeat2/2025', # SRR33030014
+    'A/cattle/NV/25-006538-001-original/2025', # SRR33124766
+    'A/cattle/NV/25-006542-001-original/2025', # SRR33124744
+    'A/cattle/NV/25-006542-002-original/2025', # SRR33124733
+    'A/cattle/NV/25-006542-003-original/2025', # SRR33124722
+    'A/cattle/NV/25-008827-001-original/2025', # SRR32974124
+    'A/cattle/NV/25-008828-001-original/2025', # SRR32974123
+    'A/cattle/NV/25-010142-001-original/2025', # SRR33030013
 ])
 
 aligned_all_fasta_path = delphy_inputs_path / f'{run_prefix}-ALL.fasta'
