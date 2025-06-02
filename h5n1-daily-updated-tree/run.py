@@ -2,7 +2,8 @@
 #
 # This script gathers all the cattle H5N1 sequences in the Andersen lab's avian-influenza repo,
 # cross-references them to dates & geo tags in GenBank where available and applies some
-# basic QA filters.  Then sequences are aligned segment by segment against the
+# basic QA filters (excluding anything with a genotype different from B3.13).
+# Then sequences are aligned segment by segment against the
 # reference in `avian-influenza` (`A/cattle/Texas/24-008749-003/2024(H5N1)`).
 # All segments are concatenated, longest to shortest, and Delphy fasta and metadata
 # files are generated, both for all matching sequences as well as only those with
@@ -49,6 +50,7 @@ if not path_to_delphy.exists():
 # =========================================================
 refseq_genbank_name = 'A/cattle/Texas/24-008749-003/2024' # See README
 refseq_srr = 'SRR28752635'  # Found in metadata/genbank_mapping.tsv
+dominant_genotype = 'B3.13'
 
 # Segments ordered longest-to-shortest
 # This is how NextStrain orders them, and it also coincides with GenBank segment numbers:
@@ -272,6 +274,44 @@ for retracted_srr in retracted_srrs:
     del srr_2_metadata[retracted_srr]
 
 print(f'A total of {len(srr_2_seg_2_filename)} cattle-host non-retracted SRRs remain')
+
+# Read Genotype assignment
+# ========================
+genoflu_results_file_name = data_repo_path / 'metadata' / 'genoflu_results.tsv'
+print(f"\nParsing Genoflu genotype assignments in {genoflu_results_file_name}")
+
+srr_2_genotype = defaultdict(list)
+with genoflu_results_file_name.open('r') as f:
+    ff = csv.reader(f, delimiter='\t')
+    header = None
+    for row in ff:
+        if not header:
+            header = row
+            continue
+
+        (sra_run, sample_date, fasta_filename, genotype, *rest) = row
+
+        if sra_run not in srr_2_seg_2_filename:
+            continue   # We may have dropped this SRR already owning to non-cattle host
+
+        if sra_run in srr_2_genotype:
+            raise ValueError(f'SRR {sra_run} appears 2+ times in {genoflu_results_file_name} ?')
+        
+        srr_2_genotype[sra_run] = genotype
+
+non_dominant_genotype_srrs = []
+for srr, genotype in srr_2_genotype.items():
+    if genotype != dominant_genotype:
+        non_dominant_genotype_srrs.append(srr)
+
+print(f'Dropping {len(non_dominant_genotype_srrs)} SRRs because they are not confidently of genotype "{dominant_genotype}"')
+
+for non_dominant_genotype_srr in non_dominant_genotype_srrs:
+    del srr_2_seg_2_filename[non_dominant_genotype_srr]
+    del srr_2_metadata[non_dominant_genotype_srr]
+
+print(f'A total of {len(srr_2_seg_2_filename)} cattle-host non-retracted SRRs with genotype {dominant_genotype} remain')
+
 
 # Read SRR -> GenBank mappings
 # ============================
@@ -661,28 +701,7 @@ for seg in ordered_segments:
 
 # Exclude clear outliers from previous runs (visual inspection)
 excluded_ids = set([
-    # Excluded on 2025-04-21 from looking at 2025-04-15 run
-    # (https://delphy.fathom.info/?h5n1/2025-04-15-38289d50b/us-h5n1-2025-04-15-38289d50b.dphy
-    #  the latest copy here reflects these exclusions, but the outliers are visible
-    #  in earlier runs already, e.g.,
-    #  https://delphy.fathom.info/?h5n1/2025-04-11-b069c656b/us-h5n1-2025-04-11-b069c656b.dphy)
-    'A/cattle/NV/25-003385-001-original/2025', # SRR32654098
-    'A/cattle/NV/25-002645-006-original/2025', # SRR32254301
-    'A/cattle/NV/25-002645-005-original/2025', # SRR32254302
-    'A/cattle/NV/25-002645-004-original/2025', # SRR32254303
-    'A/cattle/NV/25-002645-003-original/2025', # SRR32254304
-
-    # Excluded on 2025-05-15 from looking at 2025-05-15 run
-    # (https://delphy.fathom.info/?h5n1/2025-05-15-dcdfaf86d2/us-h5n1-2025-05-15-dcdfaf86d2.dphy)
-    'A/cattle/NV/25-006535-001-original/2025', # SRR33124777
-    'A/cattle/NV/25-006537-001-original-repeat2/2025', # SRR33030014
-    'A/cattle/NV/25-006538-001-original/2025', # SRR33124766
-    'A/cattle/NV/25-006542-001-original/2025', # SRR33124744
-    'A/cattle/NV/25-006542-002-original/2025', # SRR33124733
-    'A/cattle/NV/25-006542-003-original/2025', # SRR33124722
-    'A/cattle/NV/25-008827-001-original/2025', # SRR32974124
-    'A/cattle/NV/25-008828-001-original/2025', # SRR32974123
-    'A/cattle/NV/25-010142-001-original/2025', # SRR33030013
+    # All samples previously on this list were D1.1 samples from Nevada (2025-06-02)
 ])
 
 aligned_all_fasta_path = delphy_inputs_path / f'{run_prefix}-ALL.fasta'
