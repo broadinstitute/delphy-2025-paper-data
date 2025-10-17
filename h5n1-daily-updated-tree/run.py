@@ -866,7 +866,7 @@ yyyy, mm, dd = parse_genbank_date(latest_date_str)[0]
 latest_date = datetime.date(yyyy, mm, dd)
 cutoff_date = datetime.date(2023, 10,  1)
 skygrid_cutoff_years = (latest_date - cutoff_date).days / 365.0
-skygrid_num_intervals = math.max(1, math.floor(skygrid_cutoff_years * 12))
+skygrid_num_intervals = max(1, math.floor(skygrid_cutoff_years * 12))
 skygrid_cutoff_years = skygrid_num_intervals / 12.0   # Tweak cutoff so intervals are "exactly" 1 month
 
 dphy_path = delphy_inputs_path / f'{run_prefix}.dphy'
