@@ -30,6 +30,7 @@ import datetime
 import sys
 import json
 import seaborn as sb  # For color palette
+import math
 
 if len(sys.argv) != 2:
     sys.stderr.write("Usage: ./run.py <email-address-for-Entrez>\n")
@@ -49,6 +50,8 @@ if not path_to_delphy.exists():
 # Basic info about 2024+ H5N1-in-cattle outbreak in the USA
 # =========================================================
 refseq_genbank_name = 'A/cattle/Texas/24-008749-003/2024' # See README
+refseq_genbank_name_in_genbank_mapping = 'A/cattle/TX/24-008749-003-original/2024' # Not sure why this changed
+
 refseq_srr = 'SRR28752635'  # Found in metadata/genbank_mapping.tsv
 dominant_genotype = 'B3.13'
 
@@ -134,7 +137,6 @@ def read_fasta(path):
 
 # Clone Andersen lab's avian-influenza data repo
 # ==============================================
-commit_hash = 'ebfdf65'
 print(f"\nCloning Andersen lab's avian-influenza repo")
 data_repo_path = Path('avian-influenza')
 do_clone = True
@@ -362,7 +364,7 @@ for srr, genbank_mappings in srr_2_genbank_mappings.items():
 
     # OVERRIDE for the reference sequence
     if srr == refseq_srr:
-        chosen_mapping = [(acc, name) for (acc, name) in genbank_mappings if name == refseq_genbank_name][0]
+        chosen_mapping = [(acc, name) for (acc, name) in genbank_mappings if name == refseq_genbank_name_in_genbank_mapping][0]
 
     if len(genbank_mappings) > 1:
         if warnings_on:
@@ -563,7 +565,7 @@ print(f'Unique geos: {sorted(list(set(srr_2_genbank_geo.values())))}')
 
 # Read in reference and sample sequences to prepare for segment-by-segment alignment
 # ==================================================================================
-assert srr_2_genbank_name[refseq_srr] == refseq_genbank_name
+assert srr_2_genbank_name[refseq_srr] == refseq_genbank_name_in_genbank_mapping
 refseq_file_path = data_repo_path / 'reference' / 'reference.fasta'
 
 print(f'\nReading reference genome in {refseq_file_path}')
@@ -702,6 +704,14 @@ for seg in ordered_segments:
 # Exclude clear outliers from previous runs (visual inspection)
 excluded_ids = set([
     # All samples previously on this list were D1.1 samples from Nevada (2025-06-02)
+
+    # These two CA sequences are supposedly dated to late Jan 2024, but they are separated
+    # from the nearest sequences by very many SNPs.  Including them single-handedly pushes the
+    # tMRCA to ~ Oct 2023 instead of late Dec 2023, and implies that the California outbreak of
+    # mid-late 2024 descends from the root via a ~6-month long branch with no other descendants.
+    # All of the above suggests these two sequences have a data problem, so we exclude them.
+    'A/cattle/CA/24-035207-001-original/2024',
+    'A/cattle/CA/24-035207-002-original/2024',
 ])
 
 aligned_all_fasta_path = delphy_inputs_path / f'{run_prefix}-ALL.fasta'
@@ -837,11 +847,27 @@ print(f'Metadata JSON blob (for .dphy file) written to {input_dphy_metadata_path
 #  - 5,000,000 steps per sequence
 #  - 200 samples in .dphy file & trees file
 #  - 10,000 samples in log file
+#  - Skygrid cutoff around Oct 2023
+#  - Skygrid intervals should be around 1 month long
+
 num_seqs = len(srr_2_seg_2_filename)  # Off by 1, but no biggie
 steps_per_seq = 5_000_000
 num_steps = num_seqs * steps_per_seq
 steps_per_log = num_steps // 10_000
 steps_per_sample = num_steps // 200
+
+# ISO date strings sort from earliest to latest when sorted lexicographically
+# Looping over srr_2_seg_2_filename doesn't apply excluded_ids filter, but that's marginal,
+# and as of this writing, all excluded_ids were collected before the latest sequence in the dataset.
+latest_date_str = max(srr_2_final_date[srr] for srr in srr_2_seg_2_filename.keys())
+
+# latest_date_str is an exact date, so range min ([0]) and max ([1]) match
+yyyy, mm, dd = parse_genbank_date(latest_date_str)[0]
+latest_date = datetime.date(yyyy, mm, dd)
+cutoff_date = datetime.date(2023, 10,  1)
+skygrid_cutoff_years = (latest_date - cutoff_date).days / 365.0
+skygrid_num_intervals = math.max(1, math.floor(skygrid_cutoff_years * 12))
+skygrid_cutoff_years = skygrid_num_intervals / 12.0   # Tweak cutoff so intervals are "exactly" 1 month
 
 dphy_path = delphy_inputs_path / f'{run_prefix}.dphy'
 dphy_run_log_path = delphy_inputs_path / f'{run_prefix}-run-log.txt'
@@ -860,6 +886,10 @@ delphy_cli = [
     "--v0-out-delphy-metadata-file", input_dphy_metadata_path.as_posix(),
     "--v0-delphy-snapshot-every", str(steps_per_sample),
     "--v0-site-rate-heterogeneity",
+    "--v0-pop-model", "skygrid",
+    "--v0-skygrid-type", "log-linear",
+    "--v0-skygrid-cutoff", str(skygrid_cutoff_years),
+    "--v0-skygrid-num-parameters", str(skygrid_num_intervals + 1),
 ]
 
 print(f'Running Delphy (run `tail -f {dphy_run_log_path.as_posix()}` for progress)...')
